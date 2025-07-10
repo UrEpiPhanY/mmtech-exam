@@ -2,7 +2,7 @@ from taskSql import get_connection
 from task import Task
 from mysql.connector import Error
 
-def create_task(task: Task):
+def create_task(task: Task): # Create a new task in the database
     try:
         conn = get_connection()
         cursor = conn.cursor()
@@ -26,7 +26,7 @@ def create_task(task: Task):
         cursor.close()
         conn.close()
 
-def get_task(task_id: int) -> Task:
+def get_task(task_id: int) -> Task: # Fetch a task by ID from the database
     try:
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
@@ -40,7 +40,7 @@ def get_task(task_id: int) -> Task:
         cursor.close()
         conn.close()
 
-def get_all_tasks() -> list:
+def get_all_tasks() -> list: # Fetch all tasks from the database
     try:
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
@@ -48,13 +48,13 @@ def get_all_tasks() -> list:
         rows = cursor.fetchall()
         return [Task(**row) for row in rows]
     except Error as e:
-        print(f"rror fetching tasks: {e}")
+        print(f"Error fetching tasks: {e}")
         return []
     finally:
         cursor.close()
         conn.close()
 
-def update_task(task_id: int, **kwargs):
+def update_task(task_id: int, **kwargs): # Update a task by ID with variable keyword arguments
     try:
         allowed_fields = ['title', 'description', 'due_date', 'priority_level', 'status']
         updates = []
@@ -76,13 +76,13 @@ def update_task(task_id: int, **kwargs):
         cursor = conn.cursor()
         cursor.execute(sql, values)
         conn.commit()
-    except Error as e:
-        print(f"Error updating task: {e}")
+    except Error as e: # Handle database errors
+        print(f"Error updating task: {e}") 
     finally:
-        cursor.close()
+        cursor.close() 
         conn.close()
 
-def delete_task(task_id: int):
+def delete_task(task_id: int): # Delete a task by ID
     try:
         conn = get_connection()
         cursor = conn.cursor()
@@ -94,8 +94,8 @@ def delete_task(task_id: int):
         cursor.close()
         conn.close()
 
-def update_progress(task_id: int, status: str):
-    allowed = ["In Progress", "Completed"]
+def update_progress(task_id: int, status: str): # Update task status
+    allowed = ["In Progress", "Completed"] 
     if status not in allowed:
         print("Status not allowed.")
         return
@@ -103,12 +103,12 @@ def update_progress(task_id: int, status: str):
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute(
-            "UPDATE tasks SET status = %s WHERE task_id = %s",
+            "UPDATE tasks SET status = %s WHERE task_id = %s", 
             (status, task_id)
         )
         conn.commit()
     except Exception as e:
-        print(f"Error updating task progress: {e}")
+        print(f"Error updating task progress: {e}") 
     finally:
         cursor.close()
         conn.close()

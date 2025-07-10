@@ -47,7 +47,7 @@ def validate_priority(priority):
 #endregion
 
 #region Core CLI Functions
-def create_task_cli():
+def create_task_cli(): # Create a new task with user input
     print("\nLeave any field blank to cancel task creation.")
     title = get_input("\nTitle")
     if title is None: return
@@ -79,19 +79,27 @@ def create_task_cli():
     confirm = input("\nConfirm creation? (y/n): ").strip().lower()
     if confirm == 'y':
         create_task(task)
-        print("Task created successfully!")
+        print("\nTask created successfully!")
     else:
-        print("Task creation cancelled.")
+        print("\nTask creation cancelled.")
 
-def view_all_tasks():
+def view_all_tasks(): # View all tasks with sorting options
     tasks = get_all_tasks()
     if not tasks:
         print("No tasks found.")
-    else:
-        for task in tasks:
-            print(task)
+        return
 
-def view_task_by_id():
+    sort_order = input("Sort by (1) Newest first or (2) Oldest first? [1/2]: ").strip()
+
+    try:
+        tasks.sort(key=lambda task: task.created_at, reverse=(sort_order == '1'))
+    except AttributeError:
+        print("Warning: Some tasks are missing 'created_at' field. Showing unsorted.")
+    
+    for task in tasks:
+        print(task)
+
+def view_task_by_id(): # View a specific task by ID
     task_id = get_input("\nEnter Task ID", validator=int)
     if task_id is None: return
 
@@ -101,7 +109,7 @@ def view_task_by_id():
     else:
         print("\nTask not found.")
 
-def update_task_cli():
+def update_task_cli(): # Update an existing task with user input
     task_id = get_input("\nTask ID to update", validator=int)
     if task_id is None: return
 
@@ -110,19 +118,19 @@ def update_task_cli():
         print("\nTask not found.")
         return
 
-    print("\nLeave all fields blank to cancel the update.")
+    print("\nLeave all fields blank to cancel the update.") 
 
-    title = input("\nNew Title: ").strip()
+    title = input("\nNew Title: ").strip() 
     description = input("New Description: ").strip()
     due_date_raw = input("New Due Date (YYYY-MM-DD): ").strip()
     priority = input("New Priority (Low/Medium/High): ").strip()
     status = input("New Status (Pending/In Progress/Completed): ").strip()
 
-    if not any([title, description, due_date_raw, priority, status]):
+    if not any([title, description, due_date_raw, priority, status]): # If all fields are blank, cancel the update
         print("\nUpdate cancelled.")
         return
 
-    updates = {}
+    updates = {} # Prepare updates dictionary. If a field is provided, it will be added to the updates dictionary.
     if title:
         updates['title'] = title
     if description:
@@ -149,18 +157,18 @@ def update_task_cli():
     update_task(task_id, **updates)
     print("Task updated.")
 
-def delete_task_cli():
+def delete_task_cli(): # Delete a task by ID
     task_id = get_input("\nTask ID to delete", validator=int)
     if task_id is None: return
 
     delete_task(task_id)
     print("\nTask deleted.")
 
-def update_task_progress_cli():
+def update_task_progress_cli(): # Update the progress of a task by ID
     task_id = get_input("\nEnter Task ID", validator=int)
     if task_id is None: return
 
-    task = get_task(task_id)
+    task = get_task(task_id) # Fetch the task by ID
     if not task:
         print("\nTask not found.")
         return
@@ -170,11 +178,11 @@ def update_task_progress_cli():
     if status is None: return
 
     update_progress(task_id, status)
-    print("\nTask progress updated.")
+    print("\nTask progress updated.") 
 #endregion
 
 #region Main Loop
-def main():
+def main(): # Main loop to run the CLI
     while True:
         show_menu()
         choice = input("\nChoose an option (1-7): ").strip()
@@ -198,5 +206,5 @@ def main():
             print("\nInvalid choice. Try again.")
 #endregion
 
-if __name__ == "__main__":
+if __name__ == "__main__": # Entry point for the script
     main()

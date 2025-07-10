@@ -87,9 +87,17 @@ def view_all_tasks():
     tasks = get_all_tasks()
     if not tasks:
         print("No tasks found.")
-    else:
-        for task in tasks:
-            print(task)
+        return
+
+    sort_order = input("Sort by (1) Newest first or (2) Oldest first? [1/2]: ").strip()
+
+    try:
+        tasks.sort(key=lambda task: task.created_at, reverse=(sort_order == '1'))
+    except AttributeError:
+        print("Warning: Some tasks are missing 'created_at' field. Showing unsorted.")
+    
+    for task in tasks:
+        print(task)
 
 def view_task_by_id():
     task_id = get_input("\nEnter Task ID", validator=int)
